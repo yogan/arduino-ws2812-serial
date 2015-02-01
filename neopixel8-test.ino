@@ -21,9 +21,46 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN_PIXEL,
 void setup() {
     strip.begin();
     strip.show(); // Initialize all pixels to 'off'
+
+    Serial.begin(9600);
+    Serial.println("Enter 'r'/'g'/'b' on serial to change strip color.");
 }
 
+char inByte;
+
+const uint32_t off   = strip.Color(0,0,0);
+const uint32_t red   = strip.Color(255,0,0);
+const uint32_t green = strip.Color(0,255,0);
+const uint32_t blue  = strip.Color(0,0,255);
+
 void loop() {
+    if (Serial.available()) {
+        inByte = Serial.read();
+        switch (inByte) {
+            case 'r':
+                fullStripToColor(red);
+                break;
+            case 'g':
+                fullStripToColor(green);
+                break;
+            case 'b':
+                fullStripToColor(blue);
+                break;
+            default:
+                fullStripToColor(off);
+                break;
+        }
+        strip.show();
+    }
+}
+
+void fullStripToColor(uint32_t c) {
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, c);
+    }
+}
+
+void demo() {
     // Some example procedures showing how to display to the pixels:
     colorWipe(strip.Color(255, 0, 0), 50); // Red
     colorWipe(strip.Color(0, 255, 0), 50); // Green
