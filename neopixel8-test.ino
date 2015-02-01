@@ -1,8 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIN_PIXEL  6
-#define PIN_BUTTON 7
-#define NUM_PIXELS 8
+#define NUM_PIXELS 60
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -19,69 +18,12 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN_PIXEL,
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
-
-int buttonState;
-int lastButtonState = LOW;
-
-long lastDebounceTime = 0;
-const long debounceDelay = 50;
-
-int currPixel = 0;
-int prevPixel = NUM_PIXELS - 1;
-bool updateNeeded = true;
-
-uint32_t colorTable[4];
-int colorTableIndex = 0;
-
 void setup() {
-    colorTable[0] = strip.Color( 23, 23,  23);
-    colorTable[1] = strip.Color(127,  0,   0);
-    colorTable[2] = strip.Color(  0, 23, 200);
-    colorTable[3] = strip.Color(23, 199,   0);
-
-    pinMode(PIN_BUTTON, INPUT);
-
     strip.begin();
     strip.show(); // Initialize all pixels to 'off'
 }
 
 void loop() {
-    int reading = digitalRead(PIN_BUTTON);  // get state of switch
-
-    if (reading != lastButtonState) {
-        lastDebounceTime = millis();
-    }
-
-    if ((millis() - lastDebounceTime) > debounceDelay) {
-        if (reading != buttonState) {
-            buttonState = reading;
-
-            if (buttonState == HIGH) {
-                prevPixel = currPixel;
-                currPixel = (currPixel + 1) % NUM_PIXELS;
-                updateNeeded = true;
-            }
-        }
-    }
-
-    lastButtonState = reading;
-
-    if (updateNeeded) {
-        updateNeeded = false;
-
-        /*
-        strip.setPixelColor(prevPixel, strip.Color(  0,  0,  0));
-        strip.setPixelColor(currPixel, strip.Color(  0, 63, 63));
-        strip.show();
-        */
-
-        /*colorWipe(colorTable[colorTableIndex], 50);*/
-        theaterChase(colorTable[colorTableIndex], 50);
-        colorTableIndex = (colorTableIndex + 1) % 4;
-    }
-}
-
-void demo() {
     // Some example procedures showing how to display to the pixels:
     colorWipe(strip.Color(255, 0, 0), 50); // Red
     colorWipe(strip.Color(0, 255, 0), 50); // Green
