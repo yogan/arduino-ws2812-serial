@@ -23,40 +23,31 @@ void setup() {
     strip.show(); // Initialize all pixels to 'off'
 
     Serial.begin(9600);
-    Serial.println("Enter 'r'/'g'/'b' on serial to change strip color.");
+    Serial.println("Send RGB values as 3 consecutive bytes on serial to change strip color.");
 }
-
-char inByte;
-
-const uint32_t off   = strip.Color(0,0,0);
-const uint32_t red   = strip.Color(255,0,0);
-const uint32_t green = strip.Color(0,255,0);
-const uint32_t blue  = strip.Color(0,0,255);
 
 void loop() {
     if (Serial.available()) {
-        inByte = Serial.read();
-        switch (inByte) {
-            case 'r':
-                fullStripToColor(red);
-                break;
-            case 'g':
-                fullStripToColor(green);
-                break;
-            case 'b':
-                fullStripToColor(blue);
-                break;
-            default:
-                fullStripToColor(off);
-                break;
-        }
+        byte r = Serial.read();
+        delay(5);
+        byte g = Serial.read();
+        delay(5);
+        byte b = Serial.read();
+        delay(5);
+        uint32_t color = strip.Color(r, g, b);
+
+        firstLedsToColor(10, color);
         strip.show();
     }
 }
 
-void fullStripToColor(uint32_t c) {
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, c);
+void fullStripToColor(uint32_t color) {
+    firstLedsToColor(strip.numPixels(), color);
+}
+
+void firstLedsToColor(uint16_t num, uint32_t color) {
+    for(uint16_t i = 0; i < num; i++) {
+        strip.setPixelColor(i, color);
     }
 }
 
