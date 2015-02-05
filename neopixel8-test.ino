@@ -23,24 +23,61 @@ void setup() {
     strip.show(); // Initialize all pixels to 'off'
 
     Serial.begin(9600);
-    Serial.println("Send RGB values as 3 consecutive bytes on serial to change strip color.");
+
+    // no writing for now, this breaks the communication
+    //Serial.println("Ready to receive commands.");
 }
 
 void loop() {
     if (Serial.available()) {
-        byte r = Serial.read();
-        delay(5);
-        byte g = Serial.read();
-        delay(5);
-        byte b = Serial.read();
-        delay(5);
-        uint32_t color = strip.Color(r, g, b);
-
-        firstLedsToColor(10, color);
-        strip.show();
+        char command = Serial.read();
+        switch (command) {
+            case 'a':
+                commandApply();
+                break;
+            case 'c':
+                commandSetColor();
+                break;
+            case 'l':
+                commandLedToColor();
+                break;
+            default:
+                break;
+        }
     }
 }
 
+void commandApply() {
+    strip.show();
+}
+
+uint8_t color_r = 0;
+uint8_t color_g = 0;
+uint8_t color_b = 0;
+
+void commandSetColor() {
+    while (!Serial.available());
+    byte r = Serial.read();
+    while (!Serial.available());
+    byte g = Serial.read();
+    while (!Serial.available());
+    byte b = Serial.read();
+
+    color_r = r;
+    color_g = g;
+    color_b = b;
+}
+
+void commandLedToColor() {
+    while (!Serial.available());
+    byte index = Serial.read();
+    if (index >= 0 && index < NUM_PIXELS) {
+        strip.setPixelColor(index, color_r, color_g, color_b);
+    }
+}
+
+
+/*
 void fullStripToColor(uint32_t color) {
     firstLedsToColor(strip.numPixels(), color);
 }
@@ -50,6 +87,8 @@ void firstLedsToColor(uint16_t num, uint32_t color) {
         strip.setPixelColor(i, color);
     }
 }
+*/
+
 
 void demo() {
     // Some example procedures showing how to display to the pixels:
