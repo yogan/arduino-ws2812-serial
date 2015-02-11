@@ -20,12 +20,33 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN_PIXEL,
 
 void setup() {
     strip.begin();
-    strip.show(); // Initialize all pixels to 'off'
+    showInitSequence();
 
     Serial.begin(9600);
 
     // no writing for now, this breaks the communication
     //Serial.println("Ready to receive commands.");
+}
+
+void showInitSequence() {
+    int inc = 1;
+    for (int i = 0; i > -1;) {
+        strip.setPixelColor(i+0, 255, 0, 0);
+        strip.setPixelColor(i+2, 0, 255, 0);
+        strip.setPixelColor(i+4, 0, 0, 255);
+        strip.show();
+
+        delay(10);
+        strip.setPixelColor(i+0, 0, 0, 0);
+        strip.setPixelColor(i+2, 0, 0, 0);
+        strip.setPixelColor(i+4, 0, 0, 0);
+        strip.show();
+
+        if (i == NUM_PIXELS-5) {
+            inc = -1;
+        }
+        i += inc;
+    }
 }
 
 void loop() {
